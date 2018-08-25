@@ -39,25 +39,45 @@ class Application(tk.Frame):
 
     def bind_events(self):
         self.master.bind("<Button-1>", self.mouse_left_click)
+        self.master.bind("<Button-3>", self.mouse_right_click)
+
+    def draw_circle_shape(self, x, y, color):
+        dimensions = [x-15, y-15, x+15, y+15]
+        self.canvas.create_oval(*dimensions, fill=color)
 
     def mouse_left_click(self, event):
         x, y = event.x, event.y
         circle = self.world.find_circle(x, y)
         if circle:
-            x, y = circle['position'][0], circle['position'][1]
-            if not self.selected:
-                self.selected = circle
-                dimensions = [x-15, y-15, x+15, y+15]
-                self.canvas.create_oval(*dimensions, fill="#42ffbd")
-            else:
-                from_x, from_y= self.selected['position'][0], \
-                                self.selected['position'][1]
-                self.canvas.create_line(from_x, from_y, x, y, fill="#ff6f43")
-
+            self.handle_click_on_circle(circle)
         else:
-            dimensions = [x-15, y-15, x+15, y+15]
-            self.canvas.create_oval(*dimensions, fill="#12f122")
-            self.world.add_circle(x, y)
+            self.create_new_circle(x, y)
+
+    def mouse_right_click(self, event):
+        if self.selected:
+            x, y = self.selected['position'][0], self.selected['position'][1]
+            self.draw_circle_shape(x, y, "#12f122")
+            self.selected = None
+
+    def create_new_circle(self, x, y):
+        self.draw_circle_shape(x, y, "#12f122")
+        self.world.add_circle(x, y)
+
+    def handle_click_on_circle(self, clicked_circle):
+        if not self.selected:
+            self.select_circle(clicked_circle)
+        else:
+            self.connect_circles(self.selected, clicked_circle)
+
+    def select_circle(self, circle):
+        x, y = circle['position'][0], circle['position'][1]
+        self.draw_circle_shape(x, y, "#42ffbd")
+        self.selected = circle
+
+    def connect_circles(self, first, second):
+        from_x, from_y= first['position'][0], first['position'][1]
+        to_x, to_y = second['position'][0], second['position'][1]
+        self.canvas.create_line(from_x, from_y, to_x, to_y, fill="#ff6f43")
 
 
 if __name__ == "__main__":
