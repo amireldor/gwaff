@@ -12,7 +12,7 @@ class World():
         }]
 
     def find_circle(self, x, y):
-        search_distance = 50
+        search_distance = 20
         for index, circle in enumerate(self.circles):
             if abs(circle['position'][0] - x) < search_distance and \
                abs(circle['position'][1] - y) < search_distance:
@@ -31,6 +31,8 @@ class Application(tk.Frame):
         self.create_widgets(width, height)
         self.bind_events()
 
+        self.selected = None
+
     def create_widgets(self, width, height):
         self.canvas = tk.Canvas(self.master, width=width, height=height)
         self.canvas.pack()
@@ -43,8 +45,15 @@ class Application(tk.Frame):
         circle = self.world.find_circle(x, y)
         if circle:
             x, y = circle['position'][0], circle['position'][1]
-            dimensions = [x-15, y-15, x+15, y+15]
-            self.canvas.create_oval(*dimensions, fill="#42ffbd")
+            if not self.selected:
+                self.selected = circle
+                dimensions = [x-15, y-15, x+15, y+15]
+                self.canvas.create_oval(*dimensions, fill="#42ffbd")
+            else:
+                from_x, from_y= self.selected['position'][0], \
+                                self.selected['position'][1]
+                self.canvas.create_line(from_x, from_y, x, y, fill="#ff6f43")
+
         else:
             dimensions = [x-15, y-15, x+15, y+15]
             self.canvas.create_oval(*dimensions, fill="#12f122")
