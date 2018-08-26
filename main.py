@@ -9,6 +9,7 @@ class World():
     def add_circle(self, x, y):
         self.circles += [{
             "position": (x, y),
+            "connects_to": [],  # not a set() because these dicts are not hashable
         }]
 
     def find_circle(self, x, y):
@@ -18,6 +19,10 @@ class World():
                abs(circle['position'][1] - y) < search_distance:
                 return circle
         return None
+
+    def connect_nodes(self, first, second):
+        if second not in first["connects_to"]:
+            first["connects_to"].append(second)
 
 
 class Application(tk.Frame):
@@ -75,6 +80,7 @@ class Application(tk.Frame):
         self.selected = circle
 
     def connect_circles(self, first, second):
+        self.world.connect_nodes(first, second)
         from_x, from_y= first['position'][0], first['position'][1]
         to_x, to_y = second['position'][0], second['position'][1]
         self.canvas.create_line(from_x, from_y, to_x, to_y, fill="#ff6f43")
