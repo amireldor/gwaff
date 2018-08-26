@@ -4,20 +4,20 @@ import tkinter as tk
 
 class World():
     def __init__(self):
-        self.circles = []
+        self.nodes = []
 
-    def add_circle(self, x, y):
-        self.circles += [{
+    def add_node(self, x, y):
+        self.nodes += [{
             "position": (x, y),
             "connects_to": [],  # not a set() because these dicts are not hashable
         }]
 
-    def find_circle(self, x, y):
+    def find_node(self, x, y):
         search_distance = 20
-        for index, circle in enumerate(self.circles):
-            if abs(circle['position'][0] - x) < search_distance and \
-               abs(circle['position'][1] - y) < search_distance:
-                return circle
+        for index, node in enumerate(self.nodes):
+            if abs(node['position'][0] - x) < search_distance and \
+               abs(node['position'][1] - y) < search_distance:
+                return node
         return None
 
     def connect_nodes(self, first, second):
@@ -46,40 +46,40 @@ class Application(tk.Frame):
         self.master.bind("<Button-1>", self.mouse_left_click)
         self.master.bind("<Button-3>", self.mouse_right_click)
 
-    def draw_circle_shape(self, x, y, color):
+    def draw_node_shape(self, x, y, color):
         dimensions = [x-15, y-15, x+15, y+15]
         self.canvas.create_oval(*dimensions, fill=color)
 
     def mouse_left_click(self, event):
         x, y = event.x, event.y
-        circle = self.world.find_circle(x, y)
-        if circle:
-            self.handle_click_on_circle(circle)
+        node = self.world.find_node(x, y)
+        if node:
+            self.handle_click_on_node(node)
         else:
-            self.create_new_circle(x, y)
+            self.create_new_node(x, y)
 
     def mouse_right_click(self, event):
         if self.selected:
             x, y = self.selected['position'][0], self.selected['position'][1]
-            self.draw_circle_shape(x, y, "#12f122")
+            self.draw_node_shape(x, y, "#12f122")
             self.selected = None
 
-    def create_new_circle(self, x, y):
-        self.draw_circle_shape(x, y, "#12f122")
-        self.world.add_circle(x, y)
+    def create_new_node(self, x, y):
+        self.draw_node_shape(x, y, "#12f122")
+        self.world.add_node(x, y)
 
-    def handle_click_on_circle(self, clicked_circle):
+    def handle_click_on_node(self, clicked_node):
         if not self.selected:
-            self.select_circle(clicked_circle)
+            self.select_node(clicked_node)
         else:
-            self.connect_circles(self.selected, clicked_circle)
+            self.connect_nodes(self.selected, clicked_node)
 
-    def select_circle(self, circle):
-        x, y = circle['position'][0], circle['position'][1]
-        self.draw_circle_shape(x, y, "#42ffbd")
-        self.selected = circle
+    def select_node(self, node):
+        x, y = node['position'][0], node['position'][1]
+        self.draw_node_shape(x, y, "#42ffbd")
+        self.selected = node
 
-    def connect_circles(self, first, second):
+    def connect_nodes(self, first, second):
         self.world.connect_nodes(first, second)
         from_x, from_y= first['position'][0], first['position'][1]
         to_x, to_y = second['position'][0], second['position'][1]
