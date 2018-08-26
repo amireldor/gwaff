@@ -1,5 +1,9 @@
 # I'm trying to make a graph-like "database" editor
 import tkinter as tk
+from collections import namedtuple
+
+
+Position = namedtuple("Position", ["x", "y"])
 
 
 class World():
@@ -8,15 +12,16 @@ class World():
 
     def add_node(self, x, y):
         self.nodes += [{
-            "position": (x, y),
-            "connects_to": [],  # not a set() because these dicts are not hashable
+            "position": Position(x, y),
+            # Next Line: not a set() because these dicts are not hashable
+            "connects_to": [],
         }]
 
     def find_node(self, x, y):
         search_distance = 20
         for index, node in enumerate(self.nodes):
-            if abs(node['position'][0] - x) < search_distance and \
-               abs(node['position'][1] - y) < search_distance:
+            if abs(node['position'].x - x) < search_distance and \
+               abs(node['position'].y - y) < search_distance:
                 return node
         return None
 
@@ -60,7 +65,7 @@ class Application(tk.Frame):
 
     def mouse_right_click(self, event):
         if self.selected:
-            x, y = self.selected['position'][0], self.selected['position'][1]
+            x, y = self.selected['position'].x, self.selected['position'].y
             self.draw_node_shape(x, y, "#12f122")
             self.selected = None
 
@@ -75,14 +80,14 @@ class Application(tk.Frame):
             self.connect_nodes(self.selected, clicked_node)
 
     def select_node(self, node):
-        x, y = node['position'][0], node['position'][1]
+        x, y = node['position'].x, node['position'].y
         self.draw_node_shape(x, y, "#42ffbd")
         self.selected = node
 
     def connect_nodes(self, first, second):
         self.world.connect_nodes(first, second)
-        from_x, from_y= first['position'][0], first['position'][1]
-        to_x, to_y = second['position'][0], second['position'][1]
+        from_x, from_y = first['position'].x, first['position'].y
+        to_x, to_y = second['position'].x, second['position'].y
         self.canvas.create_line(from_x, from_y, to_x, to_y, fill="#ff6f43")
 
 
