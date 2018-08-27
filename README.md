@@ -1,6 +1,6 @@
 Please don't use this.
 
-It's not even in demo stage. I only upload this fo backup purposes.
+It's not even in demo stage. I only upload this for backup purposes.
 
 
 What I'm trying to do:
