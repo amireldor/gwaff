@@ -34,7 +34,7 @@ class Application(tk.Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.world = World()
-
+        self.master.geometry("800x660")
         self.update()
         width, height = self.master.winfo_width(), self.master.winfo_height()
         self.canvas = None
